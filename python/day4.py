@@ -1013,16 +1013,13 @@ def get_range_sets(range_pair_str: str) -> tuple[set[int], set[int]]:
     return range_to_set(a), range_to_set(b)
 
 if __name__ == '__main__':
-    cnt = 0
+    subset_cnt = 0
+    intersect_cnt = 0
     for line in file_in.splitlines():
         a, b = get_range_sets(line)
         if a.issubset(b) or b.issubset(a):
-            cnt += 1
-    print("task 1:", cnt)
-
-    cnt = 0
-    for line in file_in.splitlines():
-        a, b = get_range_sets(line)
+            subset_cnt += 1
         if a.intersection(b):
-            cnt += 1
-    print("task 2:", cnt)
+            intersect_cnt += 1
+    print("task 1:", subset_cnt)
+    print("task 2:", intersect_cnt)
