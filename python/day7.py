@@ -8,11 +8,14 @@ class Directory:
     parent: Optional["Directory"]
     files: list[tuple[str, int]] = field(default_factory=list)
     directories: dict[str, "Directory"] = field(default_factory=dict)
+    _size: Optional[int] = None
 
     def get_size(self):
-        local_sizes = sum(size for _, size in self.files)
-        children_sizes = sum(child.get_size() for child in self.directories.values())
-        return local_sizes + children_sizes
+        if not self._size:
+            local_sizes = sum(size for _, size in self.files)
+            children_sizes = sum(child.get_size() for child in self.directories.values())
+            self._size = local_sizes + children_sizes
+        return self._size
 
     def cd(self, path):
         if path == "..": return self.parent if self.parent else self
@@ -23,11 +26,17 @@ class Directory:
         if not self.parent or self.name == "/": return self
         return self.parent._cd_root()
 
+    def _reset_size(self):
+        self._size = None
+
     def add_directory(self, directory_name: str):
         if not self.directories.get(directory_name):
             self.directories[directory_name] = Directory(name=directory_name, parent=self)
+            self._reset_size()
+
     def add_file(self, file_name: str, file_size: int):
         self.files.append((file_name, file_size))
+        self._reset_size()
 
     def print(self):
         self._print(depth=0)
